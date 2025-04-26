@@ -69,7 +69,9 @@ export default function PlayerRatingWidget() {
       const matchId = selectedMatch?.id;
       if (matchId) {
         const votesRef = ref(database, `votes/${matchId}`);
-        push(votesRef, { ratings: updatedRatings });
+        push(votesRef, { ratings: updatedRatings }).then(() => {
+          setHistory((prevHistory) => [...prevHistory, { ratings: updatedRatings }]);
+        });
       }
     }, 2000);
   };
@@ -200,3 +202,4 @@ export default function PlayerRatingWidget() {
     </div>
   );
 }
+
