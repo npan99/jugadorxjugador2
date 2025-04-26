@@ -45,6 +45,7 @@ export default function PlayerRatingWidget() {
   const [view, setView] = useState('vote');
   const [history, setHistory] = useState([]);
   const [isVoting, setIsVoting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const selectedMatch = matches.find((m) => m.id.toString() === selectedMatchId);
 
@@ -70,6 +71,8 @@ export default function PlayerRatingWidget() {
         setHistory((prevHistory) => [...prevHistory, { ratings }]);
         setRatings({});
         setIsVoting(false);
+        setSuccessMessage('¡Gracias por votar! 🎉');
+        setTimeout(() => setSuccessMessage(''), 3000);
       });
     }
   };
@@ -116,6 +119,12 @@ export default function PlayerRatingWidget() {
         <button onClick={() => setView('vote')} style={{ marginRight: 8 }}>Votar</button>
         <button onClick={() => setView('admin')}>ABM</button>
       </div>
+
+      {successMessage && (
+        <div style={{ backgroundColor: '#4caf50', color: 'white', padding: 10, marginBottom: 16, borderRadius: 4, textAlign: 'center' }}>
+          {successMessage}
+        </div>
+      )}
 
       {view === 'vote' && (
         <div>
@@ -203,4 +212,3 @@ export default function PlayerRatingWidget() {
     </div>
   );
 }
-
