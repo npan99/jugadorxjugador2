@@ -44,7 +44,7 @@ export default function PlayerRatingWidget() {
   const [ratings, setRatings] = useState({});
   const [view, setView] = useState('vote');
   const [history, setHistory] = useState([]);
-  const timeoutRef = useRef(null);
+  const [isVoting, setIsVoting] = useState(false);
 
   const selectedMatch = matches.find((m) => m.id.toString() === selectedMatchId);
 
@@ -63,23 +63,21 @@ export default function PlayerRatingWidget() {
     }
   }, [selectedMatchId]);
 
-  const delayedSubmit = (updatedRatings) => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      const matchId = selectedMatch?.id;
-      if (matchId) {
-        const votesRef = ref(database, `votes/${matchId}`);
-        push(votesRef, { ratings: updatedRatings }).then(() => {
-          setHistory((prevHistory) => [...prevHistory, { ratings: updatedRatings }]);
-        });
-      }
-    }, 2000);
+  const submitVote = () => {
+    if (selectedMatch) {
+      const votesRef = ref(database, `votes/${selectedMatch.id}`);
+      push(votesRef, { ratings }).then(() => {
+        setHistory((prevHistory) => [...prevHistory, { ratings }]);
+        setRatings({});
+        setIsVoting(false);
+      });
+    }
   };
 
   const handleRate = (playerId, value) => {
     const updatedRatings = { ...ratings, [playerId]: value };
     setRatings(updatedRatings);
-    delayedSubmit(updatedRatings);
+    setIsVoting(true);
   };
 
   const addPlayer = () => {
@@ -153,6 +151,9 @@ export default function PlayerRatingWidget() {
                   </motion.div>
                 );
               })}
+              {isVoting && (
+                <button onClick={submitVote} style={{ marginTop: 16, width: '100%', backgroundColor: '#4caf50', color: 'white', padding: 10, border: 'none', borderRadius: 4 }}>Enviar Votación</button>
+              )}
               {getRanking().length > 0 && (
                 <motion.div layout style={{ marginTop: 32 }}>
                   <h3 style={{ textAlign: 'center' }}>Ranking del Partido</h3>
